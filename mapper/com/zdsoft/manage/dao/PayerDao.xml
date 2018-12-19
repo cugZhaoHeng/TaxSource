@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdsoft.manage.dao.PayerDao">
+	<resultMap type="com.zdsoft.manage.entity.PayerBean" id="payerBaseMap">
+		<id property="id" column="id"/>
+		<result property="payerCode" column="payerCode"/>
+		<result property="payerName" column="payerName"/>
+		<result property="bizAddress" column="bizAddress"/>
+		<result property="taxOrganId" column="taxOrganId"/>
+		<result property="industryId" column="industryId"/>
+		<result property="bizScope" column="bizScope"/>
+		<result property="invoiceType" column="invoiceType"/>
+		<result property="legalPerson" column="legalPerson"/>
+		<result property="legalIdCard" column="legalIdCard"/>
+		<result property="legalMobile" column="legalMobile"/>
+		<result property="legalIdCardImageURL" column="legalIdCardImageURL"/>
+		<result property="finaceName" column="finaceName"/>
+		<result property="finaceIdCard" column="finaceIdCard"/>
+		<result property="finaceMobile" column="finaceMobile"/>
+		<result property="finaceIdCardImageURL" column="finaceIdCardImageURL"/>
+		<result property="taxerName" column="taxerName"/>
+		<result property="taxerIdCard" column="taxerIdCard"/>
+		<result property="taxerMobile" column="taxerMobile"/>
+		<result property="taxerIdCardImageURL" column="taxerIdCardImageURL"/>
+		<result property="bizAddressPhone" column="bizAddressPhone"/>
+		<result property="recordDate" column="recordDate"/>
+		<result property="userId" column="userId"/>
+	</resultMap>
+	
+	<!-- 配置单端关联 -->
+	<resultMap type="com.zdsoft.manage.entity.PayerBean" id="payerBean" extends="payerBaseMap">
+		<association property="industryBean" column="industryId" javaType="com.zdsoft.manage.entity.IndustryBean" select="com.zdsoft.manage.dao.IndustryDao.queryIndustryById"></association>
+		<association property="organBean" column="taxOrganId" javaType="com.zdsoft.manage.entity.OrganBean" select="com.zdsoft.manage.dao.OrganDao.queryOrganById"></association>
+	</resultMap>
+	
+	<!-- 根据payerCode和payerName查询记录 -->
+	<select id="queryPayer" resultMap="payerBean">
+		select * from tb_tax_payer where removeState = 0 
+			<if test="payerCode != null and payerCode != ''">
+				and payerCode = #{payerCode}
+			</if>
+			<if test="payerName != null and payerName != ''">
+				and payerName = #{payerName}
+			</if>
+		 limit #{page} , #{rows}
+	</select>
+	
+	<!-- 查询数量 -->
+	<select id="getTotal" resultType="int">
+		select count(*) from tb_tax_payer where removeState = 0 
+			<if test="payerCode != null and payerCode != ''">
+				and payerCode = #{payerCode}
+			</if>
+			<if test="payerName != null and payerName != ''">
+				and payerName = #{payerName}
+			</if>
+	</select>
+	
+	<!-- 这里到底应该返回什么，HashMap?还是Bean? -->
+	<select id="queryAllPayer" resultType="hashMap">
+		select * from tb_tax_payer where removeState = 0
+	</select>
+	
+	<select id="queryPayerById" resultType="com.zdsoft.manage.entity.PayerBean">
+		select * from tb_tax_payer where id = #{id}
+	</select>
+	
+	<delete id="removePayerById">
+		update tb_tax_payer set removeState = 1 where id = #{id}
+	</delete>
+	
+	<update id="editPayer" parameterType="com.zdsoft.manage.entity.PayerBean">
+		UPDATE tb_tax_payer SET payerCode=#{payerCode}, payerName=#{payerName}, bizAddress=#{bizAddress}, taxOrganId=#{taxOrganId}, industryId=#{industryId}, bizScope=#{bizScope}, invoiceType=#{invoiceType},legalPerson=#{legalPerson}, legalIdCard=#{legalIdCard}, legalMobile=#{legalMobile}, legalIdCardImageURL=#{legalIdCardImageURL}, finaceName=#{finaceName}, finaceIdCard=#{finaceIdCard}, finaceMobile=#{finaceMobile},finaceIdCardImageURL=#{finaceIdCardImageURL}, taxerName=#{taxerName},taxerIdCard=#{taxerIdCard},taxerMobile=#{taxerMobile},taxerIdCardImageURL=#{taxerIdCardImageURL}, bizAddressPhone=#{bizAddressPhone} where id=#{id}
+	</update>
+	
+	<insert id="addPayer" parameterType="com.zdsoft.manage.entity.PayerBean">
+		INSERT INTO tb_tax_payer (payerCode, payerName, bizAddress, taxOrganId,industryId, bizScope, invoiceType, legalPerson, legalIdCard, legalMobile, legalIdCardImageURL, finaceName, finaceIdCard, finaceMobile, finaceIdCardImageURL, taxerName, taxerIdCard, taxerMobile, taxerIdCardImageURL, bizAddressPhone, recordDate, userId) 
+		VALUES(#{payerCode},#{payerName},#{bizAddress},#{taxOrganId},#{industryId},#{bizScope},#{invoiceType},#{legalPerson},#{legalIdCard},#{legalMobile},#{legalIdCardImageURL},#{finaceName},#{finaceIdCard},#{finaceMobile},#{finaceIdCardImageURL},#{taxerName},#{taxerIdCard},#{taxerMobile},#{taxerIdCardImageURL},#{bizAddressPhone},now(),#{userId})
+	</insert>
+	
+</mapper>

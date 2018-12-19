@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdsoft.manage.dao.OrganDao">
+	<resultMap type="com.zdsoft.manage.entity.OrganBean" id="organBaseMap">
+		<id property="id" column="id"/>
+		<result property="organName" column="organName"/>
+		<result property="parentId" column="parentId"/>
+		<result property="address" column="address"/>
+		<result property="phone" column="phone"/>
+		<result property="faxPhone" column="faxPhone"/>
+		<result property="email" column="email"/>
+		<result property="leaderId" column="leaderId"/>
+		<result property="taxTypeCode" column="taxTypeCode"/>
+		<result property="state" column="state"/>
+		<result property="recordDate" column="recordDate"/>
+		<result property="recordUserId" column="recordUserId"/>
+	</resultMap>
+	<select id="queryOrganById" resultMap="organBaseMap">
+		select * from tb_tax_organ where id = #{taxOrganId}
+	</select>
+	
+	<select id="queryAllOrgan" resultType="com.zdsoft.manage.entity.OrganBean">
+		select * from tb_tax_organ
+	</select>
+</mapper>

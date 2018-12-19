@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdsoft.manage.dao.IndustryDao">
+	<resultMap type="com.zdsoft.manage.entity.IndustryBean" id="industryBaseMap">
+		<id property="id" column="id"/>
+		<result property="industryName" column="industryName"/>
+		<result property="recordDate" column="recordDate"/>
+		<result property="recordUserId" column="recordUserId"/>
+	</resultMap>
+	<select id="queryIndustryById" resultMap="industryBaseMap">
+		select * from tb_industry where id = #{industryId}
+	</select>
+	
+	<select id="queryAllIndustry" resultType="com.zdsoft.manage.entity.IndustryBean">
+		select * from tb_industry
+	</select>
+	
+</mapper>

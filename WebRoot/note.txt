@@ -1,0 +1,10 @@
+怎么将jsp+servlet+javabean的项目改写成SSM框架的项目呢？
+（1）不再出现servlet，而是用SpringMVC的注解来代替
+（2）导入Spring相关的jar包，构建spring框架；
+	①编写核心配置文件和容器，搭建spring框架；
+	②在web.xml中引入IoC容器
+（3）只保留原生的jsp或html界面、JavaBean等硬性文件；
+（4）修改页面跳转格式
+SpringMVC也是在Spring容器中，这个名称为前端控制器，需要在容器中添加视图解析器和扫描指定的基包
+
+为什么要把Spring容器和Spring MVC容器都放在Spring容器中呢？

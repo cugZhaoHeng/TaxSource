@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdsoft.manage.dao.TaskDao">
+	<resultMap type="com.zdsoft.manage.entity.TaskBean" id="taskBaseMap">
+		<result property="payerId" column="payerId"/>
+		<result property="taskName" column="taskName"/>
+		<result property="subOrganId" column="subOrganId"/>
+		<result property="approverId" column="approverId"/>
+		<result property="executeId" column="executeId"/>
+		<result property="executeTime" column="executeTime"/>
+		<result property="taskFrom" column="taskFrom"/>
+		<result property="taskState" column="taskState"/>
+		<result property="idea" column="idea"/>
+		<result property="riskLevel" column="riskLevel"/>
+		<result property="recordDate" column="recordTaskDate"/>
+		<result property="recordUserId" column="recordUserId"/>
+	</resultMap>
+	
+	<!-- 配置单端关联 -->
+	<resultMap type="com.zdsoft.manage.entity.TaskBean" id="taskBean" extends="taskBaseMap">
+		<association property="payerBean" javaType="com.zdsoft.manage.entity.PayerBean">
+			<id property="id" column="id"/>
+			<result property="payerCode" column="payerCode"/>
+			<result property="payerName" column="payerName"/>
+			<result property="bizAddress" column="bizAddress"/>
+			<result property="taxOrganId" column="taxOrganId"/>
+			<result property="industryId" column="industryId"/>
+			<result property="bizScope" column="bizScope"/>
+			<result property="invoiceType" column="invoiceType"/>
+			<result property="legalPerson" column="legalPerson"/>
+			<result property="legalIdCard" column="legalIdCard"/>
+			<result property="legalMobile" column="legalMobile"/>
+			<result property="legalIdCardImageURL" column="legalIdCardImageURL"/>
+			<result property="finaceName" column="finaceName"/>
+			<result property="finaceIdCard" column="finaceIdCard"/>
+			<result property="finaceMobile" column="finaceMobile"/>
+			<result property="finaceIdCardImageURL" column="finaceIdCardImageURL"/>
+			<result property="taxerName" column="taxerName"/>
+			<result property="taxerIdCard" column="taxerIdCard"/>
+			<result property="taxerMobile" column="taxerMobile"/>
+			<result property="taxerIdCardImageURL" column="taxerIdCardImageURL"/>
+			<result property="bizAddressPhone" column="bizAddressPhone"/>
+			<result property="recordDate" column="recordDate"/>
+			<result property="userId" column="userId"/>
+			<association property="industryBean" javaType="com.zdsoft.manage.entity.IndustryBean">
+				<result property="industryName" column="industryName"/>
+				<result property="recordDate" column="recordDate"/>
+				<result property="recordUserId" column="recordUserId"/>
+			</association>
+		</association>
+		<association property="organBean" javaType="com.zdsoft.manage.entity.OrganBean">
+			<id property="id" column="id"/>
+			<result property="organName" column="organName"/>
+			<result property="parentId" column="parentId"/>
+			<result property="address" column="address"/>
+			<result property="phone" column="phone"/>
+			<result property="faxPhone" column="faxPhone"/>
+			<result property="email" column="email"/>
+			<result property="leaderId" column="leaderId"/>
+			<result property="taxTypeCode" column="taxTypeCode"/>
+			<result property="state" column="state"/>
+			<result property="recordDate" column="recordDate"/>
+			<result property="recordUserId" column="recordUserId"/>
+		</association>
+	</resultMap>
+	
+	<select id="queryTask" resultMap="taskBean">
+		SELECT source.*, payer.payerCode, payer.payerName, industry.industryName AS industryName, 
+				payer.bizScope, organ.organName, taxer0.taxerName AS approverName, taxer1.taxerName AS executeName, 
+				user0.userName AS recordName, (source.recordTaskDate - source.executeTime) AS overDays 
+				FROM tb_tax_source AS source 
+				LEFT JOIN tb_tax_payer AS payer ON source.payerId = payer.id 
+				LEFT JOIN tb_tax_organ AS organ ON source.subOrganId = organ.id 
+				LEFT JOIN tb_taxer AS taxer0 ON source.approverId = taxer0.id 
+				LEFT JOIN tb_taxer AS taxer1 ON source.executeId = taxer1.id 
+				LEFT JOIN (SELECT DISTINCT tb_tax_payer.industryId, tb_industry.industryName FROM tb_tax_payer LEFT JOIN tb_industry ON tb_tax_payer.industryId = tb_industry.id) AS industry ON industry.industryId = payer.industryId 
+				LEFT JOIN tb_user AS user0 ON source.recordUserId = user0.id where 
+				source.removeState = 0 
+		<if test="payerCode != null and payerCode != ''">
+			and payer.payerCode = #{payerCode}
+		</if>
+		<if test="payerName != null and payerName != ''">
+			and payer.payerName = #{payerName}
+		</if>
+		<if test="organId != -1 and organId != null and organId != ''">
+			and source.subOrganId = #{organId}
+		</if>
+		<if test="industryId != null and industryId != -1 and industryId != ''">
+			and payer.industryId = #{industryId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and source.executeTime = #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and source.recordDate = #{endDate}
+		</if>
+		limit #{page} , #{rows}
+	</select>
+	
+	<select id="getTaskCount" resultType="int">
+		select count(*) from tb_tax_source where removeState = 0
+	</select>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdsoft.system.dao.UserDao">
+	<!-- 定义公共的resultMap -->
+	<resultMap type="com.zdsoft.system.entity.UserBean" id="userBaseMap">
+		<id property="id" column="id"/>
+		<result property="userName" column="userName"/>
+		<result property="password" column="password"/>
+		<result property="taxerId" column="taxerId" />
+		<result property="salt" column="salt"/>
+		<result property="permissionId" column="permissionId"/>
+		<result property="state" column="state"/>
+		<result property="email" column="email"/>
+	</resultMap>
+	
+	<!-- 创建selectUserByUserName方法，查询结果集 -->
+	<select id="queryUserByUserName" resultMap="userBaseMap">
+		select * from tb_user where userName = #{userName}
+	</select>
+	
+	<select id="queryAllUser" resultType="com.zdsoft.system.entity.UserBean">
+		select * from tb_user
+	</select>
+</mapper>
